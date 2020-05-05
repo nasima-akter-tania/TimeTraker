@@ -16,7 +16,7 @@ This is a simple Attendance System app with flask,flask_restful,flask_jwt and sq
 It requires  v3.7+ to run.
 Clone project from github
 ```sh
-$ git clone https://github.com/Tan-Ia/Bank_App_With_Python_Console.git
+$ git clone https://github.com/Tan-Ia/TimeTraker.git
 ```
 Install virtualenvironment...
 ```sh
@@ -32,7 +32,7 @@ $ source venv/bin/activate
 ```
 Run Project...
 ```sh
-$ python bank_app.py
+$ flask run --port=8889
 ```
 
 ### Advantage
