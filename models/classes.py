@@ -1,18 +1,14 @@
 from main import db
 
 
-#SUBJECT MODEL FOR DATABASE TABLE
-class SubjectModel(db.Model):
-    __tablename__ = 'subjects'
+#CLASS MODEL FOR DATABASE TABLE
+class ClassModel(db.Model):
+    __tablename__ = 'classes'
     
     p_id = db.Column(db.Integer, primary_key = True)
     name = db.Column(db.String(100), unique = True, nullable = False)
     code = db.Column(db.String(120), unique = True, nullable = False)
-    class_id = db.Column(db.Integer, db.ForeignKey('classes.p_id'), nullable = False)
-    department_id = db.Column(db.Integer, db.ForeignKey('departments.p_id'), nullable = False)
-    classes= db.relationship("ClassModel", backref=db.backref("std_class", uselist=False))
-    departmentes = db.relationship("DepartmentModel", backref=db.backref("std_departments", uselist=False))
-    
+  
  
     def save_to_db(self):
         db.session.add(self)
@@ -22,22 +18,29 @@ class SubjectModel(db.Model):
         db.session.commit()
     def db_to_commit(self):
         db.session.commit()
-        
+
     #FOR CONVERT DATA INTO JSON FORMAT
     @staticmethod
     def to_json(data):
         return {
                 'name': data.name,
                 'code': data.code,
-                'class':data.class_id,
-                'department':data.department_id
                 }
+    @classmethod
+    def find_by_code(cls, code):
+        return cls.query.filter_by(code = code).first()
+
+    @classmethod
+    def find_by_name(cls, name):
+        return cls.query.filter_by(name = name).first()
+
+
     @classmethod
     def find_by_id(cls, p_id):
         return cls.query.filter_by(p_id = p_id).first()
-        
+              
     @classmethod
     def return_all(cls):
-        return {'subjects': list(map(lambda x: self.to_json(x), SubjectModel.query.all()))}
+        return {'classes': list(map(lambda x: cls.to_json(x), ClassModel.query.all()))}
 
 

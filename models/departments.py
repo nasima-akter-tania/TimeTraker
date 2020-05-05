@@ -8,7 +8,8 @@ class DepartmentModel(db.Model):
     p_id = db.Column(db.Integer, primary_key = True)
     name = db.Column(db.String(100), unique = True, nullable = False)
     code = db.Column(db.String(120), unique = True, nullable = False)
-    class_id = db.Column(db.Integer, db.ForeignKey('classes.p_id', nullable = False)
+    class_id = db.Column(db.Integer, db.ForeignKey('classes.p_id'), nullable = False)
+    classes= db.relationship("ClassModel", backref=db.backref("dep_class", uselist=False))
   
  
     def save_to_db(self):
@@ -26,8 +27,16 @@ class DepartmentModel(db.Model):
         return {
                 'name': data.name,
                 'code': data.code,
-                'class': data.class_id,
+                'class': data.classes.name,
                 }
+
+    @classmethod
+    def find_by_code(cls, code):
+        return cls.query.filter_by(code = code).first()
+
+    @classmethod
+    def find_by_name(cls, name):
+        return cls.query.filter_by(name = name).first()
 
     @classmethod
     def find_by_id(cls, p_id):
@@ -35,6 +44,6 @@ class DepartmentModel(db.Model):
  
     @classmethod
     def return_all(cls):
-        return {'users': list(map(lambda x: self.to_json(x), DepartmentModel.query.all()))}
+        return {'departments': list(map(lambda x: cls.to_json(x), DepartmentModel.query.all()))}
 
 

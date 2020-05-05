@@ -9,11 +9,12 @@ class StudentModel(db.Model):
     reg_no = db.Column(db.String(100), unique = True, nullable = False)
     name = db.Column(db.String(120), nullable = False)
     gender = db.Column(db.String(120), nullable = False)
-    class_id = db.Column(db.Integer, db.ForeignKey('classes.p_id', nullable = False)
-    department_id =  db.Column(db.Integer, db.ForeignKey('deparments.p_id', nullable = False)
-    classes= relationship("ClassModel", backref=backref("classes", uselist=False))
-    departmentes = relationship("DepartmentModel", backref=backref("departments", uselist=False))
+    class_id = db.Column(db.Integer, db.ForeignKey('classes.p_id'), nullable = False)
+    department_id = db.Column(db.Integer, db.ForeignKey('departments.p_id'), nullable = False)
     session = db.Column(db.String(50), nullable = False)
+    classes= db.relationship("ClassModel", backref=db.backref("std_class", uselist=False))
+    departmentes = db.relationship("DepartmentModel", backref=db.backref("std_departments", uselist=False))
+    
 
     def save_to_db(self):
         db.session.add(self)
@@ -23,15 +24,15 @@ class StudentModel(db.Model):
         db.session.commit()
     def db_to_commit(self):
         db.session.commit()
-        
+
     @staticmethod
     def to_json(x):
         return {
                 'reg': x.reg,
                 'name': x.name,
                 'gender':x.gender,
-                'class':x.classes.name,
-                'department':x.departmentes.name,
+                'class_id':x.classes.name,
+                'department_id':x.departmentes.name,
                  'session':x.session
                 }
     # def update_data(self, old_data,new_data):
@@ -49,9 +50,13 @@ class StudentModel(db.Model):
     @classmethod
     def find_by_id(cls, p_id):
         return cls.query.filter_by(p_id = p_id).first()
+
+    @classmethod
+    def find_by_reg(cls, reg_no):
+        return cls.query.filter_by(reg_no = reg_no).first()
  
     @classmethod
     def return_all(cls):
-        return {'users': list(map(lambda x: self.to_json(x), StudentModel.query.all()))}
+        return {'students': list(map(lambda data: self.to_json(data), StudentModel.query.all()))}
 
 

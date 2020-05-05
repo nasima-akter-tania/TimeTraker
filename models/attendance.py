@@ -7,9 +7,9 @@ class AttendanceModel(db.Model):
     
     p_id = db.Column(db.Integer, primary_key = True)   
     class_id = db.Column(db.Integer, db.ForeignKey('classes.p_id', nullable = False)
-    department_id = db.Column(db.Integer, db.ForeignKey('departments.p_id', nullable = False)
-    subject_id = db.Column(db.Integer, db.ForeignKey('subjects.p_id', nullable = False)
-    student_id = db.Column(db.Integer, db.ForeignKey('students.p_id', nullable = False)
+    department_id = db.Column(db.Integer, db.ForeignKey('departments.p_id'), nullable = False)
+    subject_id = db.Column(db.Integer, db.ForeignKey('subjects.p_id'), nullable = False)
+    student_id = db.Column(db.Integer, db.ForeignKey('students.p_id'), nullable = False)
     status = db.Column(db.String(50), unique = True, nullable = False)
 
   
@@ -32,8 +32,8 @@ class AttendanceModel(db.Model):
     #             'department':data.department_id
     #             }
  
-    @classmethod
-    def return_all(cls):
-        return {'users': list(map(lambda x: self.to_json(x), AttendanceModel.query.all()))}
+    # @classmethod
+    # def return_all(cls):
+    #     return {'users': list(map(lambda x: self.to_json(x), AttendanceModel.query.all()))}
 
 
