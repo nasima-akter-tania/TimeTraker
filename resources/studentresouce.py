@@ -1,6 +1,5 @@
 from flask_restful import Resource, reqparse
 from models.students import StudentModel
-
 from flask_jwt_extended import jwt_required
                                
                                 
@@ -15,6 +14,7 @@ parser.add_argument('session', help = 'session field required', required = True)
 
 
 class StudentRegistration(Resource):
+    @jwt_required
     def post(self):
         data = parser.parse_args()
 
@@ -44,39 +44,37 @@ class StudentRegistration(Resource):
 
 class AllStudents(Resource):
     """this resource for /students endpoint by this url all students data can view"""
+    @jwt_required
     def get(self):
         return StudentModel.return_all()
 
 class StudentBase(Resource):
+    @jwt_required
     def get(self, p_id):
         student_data = StudentModel.find_by_id(p_id)
         jsonify_data = student_data.to_json(student_data)
         return {'student': jsonify_data}
         
-       
+    @jwt_required   
     def delete(self, p_id):
         student_data = StudentModel.find_by_id(p_id)
         if student_data:
             student_data.db_to_delete()
             return {'message': 'Student data deleted successfully'}, 200
         else:
-            return {'message': 'Student not found'}, 500
-    # def put(self, p_id):
-        
-    #     parser.add_argument('name', help = 'name filed required', required = True)
-    #     parser.add_argument('phone', help = 'phone field required', required = True)
-    #     parser.add_argument('gender', help = 'gender field required', required = True)
-    #     parser.add_argument('designation', help = 'designation field required', required = True)
-    #     parser.add_argument('role', help = 'role field required', required = True)
-    #     data = parser.parse_args()
-    #     student_data = StudentModel.find_by_id(p_id)
-    #     student_data.update_data(student_data,data)
-
-    #     student_data.db_to_commit
-        
-     
-
-    #     return {"ok":"success"}
+            return {'message': 'Student not found'}, 400
+    @jwt_required
+    def put(self, p_id):
+        data = parser.parse_args()
+        student_data = StudentModel.find_by_id(p_id)
+        student_data.update_data(student_data,data)
+        try:
+            student_data.db_to_commit()
+            return {
+                'message': ' This {} student data  updated successfully'.format(data['name'])
+            }, 200
+        except:
+            return {'message': 'Something went wrong'}, 500
        
        
 

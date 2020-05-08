@@ -1,4 +1,4 @@
-from main import db
+from run import db
 
 
 #STUDENT MODEL FOR DATABASE TABLE
@@ -19,6 +19,7 @@ class StudentModel(db.Model):
     def save_to_db(self):
         db.session.add(self)
         db.session.commit()
+        
     def db_to_delete(self):
         db.session.delete(self)
         db.session.commit()
@@ -28,23 +29,22 @@ class StudentModel(db.Model):
     @staticmethod
     def to_json(x):
         return {
-                'reg': x.reg,
+                'reg_no': x.reg_no,
                 'name': x.name,
                 'gender':x.gender,
-                'class_id':x.classes.name,
-                'department_id':x.departmentes.name,
-                 'session':x.session
+                'class_id':x.class_id,
+                'department_id':x.department_id,
+                'session':x.session
                 }
-    # def update_data(self, old_data,new_data):
-    #     old_data.name = new_data['name']
-    #     old_data.email =  new_data['email']
-    #     old_data.password = new_data['password']
-    #     old_data.phone = new_data['phone']
-    #     old_data.gender = new_data['gender']
-    #     old_data.designation = new_data['designation']
-    #     old_data.role = new_data['role']
+    def update_data(self, old_data,new_data):
+        old_data.reg_no = new_data['reg_no']
+        old_data.name =  new_data['name']
+        old_data.gender = new_data['gender']
+        old_data.class_id = new_data['class_id']
+        old_data.department_id = new_data['department_id']
+        old_data.session = new_data['session']
        
-    #     return old_data
+        return old_data
     
 
     @classmethod
@@ -57,6 +57,6 @@ class StudentModel(db.Model):
  
     @classmethod
     def return_all(cls):
-        return {'students': list(map(lambda data: self.to_json(data), StudentModel.query.all()))}
+        return {'students': list(map(lambda data: cls.to_json(data), StudentModel.query.all()))}
 
 

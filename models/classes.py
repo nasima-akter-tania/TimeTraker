@@ -1,4 +1,4 @@
-from main import db
+from run import db
 
 
 #CLASS MODEL FOR DATABASE TABLE
@@ -18,6 +18,12 @@ class ClassModel(db.Model):
         db.session.commit()
     def db_to_commit(self):
         db.session.commit()
+
+    def update_data(self, old_data,new_data):
+        old_data.name = new_data['name']
+        old_data.code =  new_data['code']
+      
+        return old_data
 
     #FOR CONVERT DATA INTO JSON FORMAT
     @staticmethod

@@ -32,12 +32,12 @@ $ source venv/bin/activate
 ```
 Run Project...
 ```sh
+$ export FLASK_APP=run.py
 $ flask run --port=8889
 ```
 
 ### Advantage
   - It's easy to understand the concept of a project
-  - Easy to contibute because it's a public repository
   
 
 ### Contributors

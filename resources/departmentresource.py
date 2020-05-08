@@ -1,6 +1,5 @@
 from flask_restful import Resource, reqparse
 from models.departments import DepartmentModel
-
 from flask_jwt_extended import jwt_required
                                
                                 
@@ -48,35 +47,36 @@ class AllDepartments(Resource):
 
 class DepartmentBase(Resource):
     """this resource for /department/<int:p_id> endpoint by this url classes data can update, delete, single data view """
+    @jwt_required
     def get(self, p_id):
         department_data = DepartmentModel.find_by_id(p_id) #GET SINGLE DATA BY ID
         jsonify_data = department_data.to_json(department_data)
         return {'department': jsonify_data}
         
-       
+    @jwt_required   
     def delete(self, p_id):
         department_data = DepartmentModel.find_by_id(p_id) #GET SINGLE DATA BY ID
         if department_data:
             department_data.db_to_delete()
             return {'message': 'Department data deleted successfully'}, 200
         else:
-            return {'message': 'Department not found'}, 500
-    # def put(self, p_id):
-        
-    #     parser.add_argument('name', help = 'name filed required', required = True)
-    #     parser.add_argument('phone', help = 'phone field required', required = True)
-    #     parser.add_argument('gender', help = 'gender field required', required = True)
-    #     parser.add_argument('designation', help = 'designation field required', required = True)
-    #     parser.add_argument('role', help = 'role field required', required = True)
-    #     data = parser.parse_args()
-    #     student_data = StudentModel.find_by_id(p_id)
-    #     student_data.update_data(student_data,data)
+            return {'message': 'Department not found'}, 400
+    @jwt_required
+    def put(self, p_id):
+        data = parser.parse_args()
+        department_data = DepartmentModel.find_by_id(p_id)
+        department_data.update_data(department_data,data)
 
-    #     student_data.db_to_commit
+        try:
+            department_data.db_to_commit()
+            return {
+                'message': ' This {} department data  updated successfully'.format(data['name'])
+            }, 200
+        except:
+            return {'message': 'Something went wrong'}, 500
         
      
 
-    #     return {"ok":"success"}
        
        
 

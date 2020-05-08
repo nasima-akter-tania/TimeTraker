@@ -1,4 +1,4 @@
-from main import db
+from run import db
 
 
 #SUBJECT MODEL FOR DATABASE TABLE
@@ -10,8 +10,8 @@ class SubjectModel(db.Model):
     code = db.Column(db.String(120), unique = True, nullable = False)
     class_id = db.Column(db.Integer, db.ForeignKey('classes.p_id'), nullable = False)
     department_id = db.Column(db.Integer, db.ForeignKey('departments.p_id'), nullable = False)
-    classes= db.relationship("ClassModel", backref=db.backref("std_class", uselist=False))
-    departmentes = db.relationship("DepartmentModel", backref=db.backref("std_departments", uselist=False))
+    classes= db.relationship("ClassModel", backref=db.backref("sub_class", uselist=False))
+    departmentes = db.relationship("DepartmentModel", backref=db.backref("sub_class", uselist=False))
     
  
     def save_to_db(self):
@@ -22,6 +22,15 @@ class SubjectModel(db.Model):
         db.session.commit()
     def db_to_commit(self):
         db.session.commit()
+
+    def update_data(self, old_data,new_data):
+        old_data.name =  new_data['name']
+        old_data.code = new_data['code']
+        old_data.class_id = new_data['class_id']
+        old_data.department_id = new_data['department_id']
+      
+       
+        return old_data
         
     #FOR CONVERT DATA INTO JSON FORMAT
     @staticmethod
@@ -29,15 +38,23 @@ class SubjectModel(db.Model):
         return {
                 'name': data.name,
                 'code': data.code,
-                'class':data.class_id,
-                'department':data.department_id
+                'class':data.classes.name,
+                'department':data.departmentes.name
                 }
     @classmethod
     def find_by_id(cls, p_id):
         return cls.query.filter_by(p_id = p_id).first()
-        
+
+    @classmethod
+    def find_by_code(cls, code):
+        return cls.query.filter_by(code = code).first()
+
+    @classmethod
+    def find_by_name(cls, name):
+        return cls.query.filter_by(name = name).first()
+
     @classmethod
     def return_all(cls):
-        return {'subjects': list(map(lambda x: self.to_json(x), SubjectModel.query.all()))}
+        return {'subjects': list(map(lambda x: cls.to_json(x), SubjectModel.query.all()))}
 
 

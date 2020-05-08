@@ -54,24 +54,30 @@ class UserLogin(Resource):
         current_user = UserModel.find_by_email(data['email']) # GET USER DATA BY EMAIL
 
         if not current_user:
-            return {'message': 'User {} doesn\'t exist'.format(data['name'])}
+            return {'message': 'User {} doesn\'t exist'.format(data['email'])}
 
         if UserModel.verify_hash(data['password'], current_user.password):
-            return {'message': 'Logged in as {}'.format(current_user.name)}
+            access_token = create_access_token(identity = data['email'])
+            return {
+                'message': 'Logged in as {}'.format(current_user.name),
+                'access_token': access_token
+                }
         else:
             return {'message': 'Wrong credentials'}
       
 class AllUsers(Resource):
+    @jwt_required
     def get(self):
         return UserModel.return_all()
 
 class UserBase(Resource):
+    @jwt_required
     def get(self, p_id):
         user_data = UserModel.find_by_id(p_id)
         jsonify_data =user_data.to_json(user_data)
         return {'user': jsonify_data}
         
-       
+    @jwt_required   
     def delete(self, p_id):
         user_data = UserModel.find_by_id(p_id)
         if user_data:
@@ -79,6 +85,7 @@ class UserBase(Resource):
             return {'message': 'user data deleted successfully'}, 200
         else:
             return {'message': 'User not found'}, 500
+    @jwt_required
     def put(self, p_id):
         
         parser.add_argument('name', help = 'name filed required', required = True)
@@ -94,7 +101,7 @@ class UserBase(Resource):
         
      
 
-        return {"ok":"success"}
+        
        
        
 
